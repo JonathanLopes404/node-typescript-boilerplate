@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "es2021",                                
-    "module": "commonjs",                                
+    "module": "ESNext",                                
     "rootDir": "./src",                                  
     "moduleResolution": "node",                    
-    "baseUrl": "./",                                  
+    "baseUrl": ".",                                  
     "paths": {
+      "@main/*": ["./src/main/*"],
       "@presentation/*": ["src/presentation/*"]
     },
     "allowJs": true,                                  

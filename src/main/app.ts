@@ -1,14 +1,40 @@
-import express, { type Express } from "express"
+import { join } from "node:path"
+import express, { type Express, Router } from "express"
+import dotenv from "dotenv"
+import initMiddlewares from "./config/middlewares"
+import routes from "./config/routes"
+
+dotenv.config()
 
 class App {
-  app: Express
+  express: Express
+  router: Router
 
   constructor() {
-    this.app = express()
+    this.express = express()
+    this.router = Router()
+
+    initMiddlewares(this.express)
+    this.initRoutes()
+  }
+
+  initRoutes(): void {
+    for (const route of routes) {
+      const routeName = route.path.replace("/", "")
+      const filePath = join(__dirname, "routes", `${routeName}.ts`)
+
+      import(filePath).then((routeHandler) => {
+        routeHandler = routeHandler.default
+        const method = route.method ?? "get"
+        this.router[method](route.path, routeHandler)
+      })
+    }
+
+    this.express.use(this.router)
   }
 
   listen(port: number, callback?: () => void): void {
-    this.app.listen(port, callback)
+    this.express.listen(port, callback)
   }
 }
 
